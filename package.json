@@ -1,0 +1,32 @@
+{
+  "name": "working-rcon",
+  "version": "0.0.9",
+  "description": "A working rcon library",
+  "main": "dist/index",
+  "scripts": {
+    "build": "babel --out-dir dist src/**/*.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/angryzor/working-rcon.git"
+  },
+  "keywords": [
+    "rcon",
+    "srcds"
+  ],
+  "author": "Ruben Tytgat",
+  "license": "GPL-3.0",
+  "bugs": {
+    "url": "https://github.com/angryzor/working-rcon/issues"
+  },
+  "homepage": "https://github.com/angryzor/working-rcon#readme",
+  "devDependencies": {
+    "@babel/cli": "^7.4.3",
+    "@babel/core": "^7.4.3",
+    "@babel/plugin-proposal-class-properties": "^7.4.0",
+    "@babel/preset-env": "^7.4.3"
+  },
+  "dependencies": {
+    "promise-timeout": "^1.3.0"
+  }
+}
