@@ -135,7 +135,7 @@ class RconClient {
 
 exports.connect = (host, port, password, timeout = 1000) =>
 	new Promise((resolve, reject) => {
-		const socket = createConnection({ host, port, timeout }, async () => {
+		const socket = createConnection({ host, port }, async () => {
 			try {
 				const client = new RconClient(socket, timeout)
 
