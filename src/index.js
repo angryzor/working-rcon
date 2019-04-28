@@ -92,7 +92,6 @@ class RconClient {
 	}
 
 	_write(packet) {
-		console.log('>', packet)
 		this._socket.write(encode(packet))
 	}
 
@@ -114,8 +113,6 @@ class RconClient {
 	_onReceiveData = data => {
 		const packet = decode(data)
 		const callback = this._callbacks.get(packet.id)
-
-		console.log('<', packet)
 
 		// If the callback doesn't exist it may be a query that timed out, ignore.
 		if (callback != null) {
