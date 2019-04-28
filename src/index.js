@@ -143,6 +143,7 @@ exports.connect = (host, port, password, timeout = 1000) =>
 
 				resolve(client)
 			} catch (err) {
+				socket.destroy()
 				reject(err)
 			}
 		})
