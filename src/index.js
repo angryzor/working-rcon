@@ -38,6 +38,7 @@ class RconClient {
 		this._timeout = timeout
 		this._currentId = 0
 		this._pendingPacket = null
+		this._bytesReceived = 0
 		this._socket.on('data', this._onReceiveData)
 	}
 
