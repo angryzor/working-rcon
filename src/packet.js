@@ -18,6 +18,9 @@ export const encode = ({ id, type, body }) => {
 	return buf
 }
 
+export const peekSize = (buf, offset) =>
+	buf.readInt32LE(offset) + 4
+
 export const decode = (buf) => {
 	const size = buf.readInt32LE(0)
 	const id = buf.readInt32LE(4)

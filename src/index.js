@@ -1,10 +1,10 @@
 import { createConnection } from 'net'
 import { timeout, TimeoutError as PromiseTimeoutError } from 'promise-timeout'
-import { Types, encode, decode } from './packet'
+import { Types, encode, decode, peekSize } from './packet'
 
 export class RconError extends Error {
 	constructor(message) {
-		this.super(message)
+		super(message)
 
 		this.name = this.constructor.name
 	}
@@ -37,6 +37,7 @@ class RconClient {
 		this._socket = socket
 		this._timeout = timeout
 		this._currentId = 0
+		this._pendingPacket = null
 		this._socket.on('data', this._onReceiveData)
 	}
 
@@ -78,7 +79,7 @@ class RconClient {
 		return result.body
 	}
 
-	end() {
+	disconnect() {
 		return new Promise(resolve => {
 			this._socket.end(null, null, resolve)
 		})
@@ -110,14 +111,35 @@ class RconClient {
 		}
 	}
 
-	_onReceiveData = data => {
-		const packet = decode(data)
+	_onReceivePacket(buf) {
+		const packet = decode(buf)
 		const callback = this._callbacks.get(packet.id)
 
 		// If the callback doesn't exist it may be a query that timed out, ignore.
 		if (callback != null) {
 			this._callbacks.delete(packet.id)
 			callback(packet)
+		}
+	}
+
+	_onReceiveData = data => {
+		let currentOffset = 0
+
+		while (currentOffset < data.length) {
+			const packetSize = peekSize(data, currentOffset)
+			const packet = this._pendingPacket != null ? this._pendingPacket : Buffer.alloc(packetSize)
+			const startLocation = this._pendingPacket != null ? this._bytesReceived : 0
+
+			data.copy(packet, startLocation, currentOffset, currentOffset + packetSize)
+
+			currentOffset += packetSize
+
+			if (currentOffset > data.length) {
+				this._pendingPacket = packet
+				this._bytesReceived = data.length - currentOffset
+			} else {
+				this._onReceivePacket(packet)
+			}
 		}
 	}
 
