@@ -138,6 +138,7 @@ class RconClient {
 				this._pendingPacket = packet
 				this._bytesReceived = data.length - currentOffset
 			} else {
+				this._pendingPacket = null
 				this._onReceivePacket(packet)
 			}
 		}
