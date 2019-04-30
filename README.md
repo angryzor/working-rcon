@@ -24,7 +24,7 @@ If you find out that this library works on a certain game, or, more importantly,
 			const status = await client.command('status')
 			const stats = await client.command('stats')
 
-			await client.end()
+			await client.disconnect()
 
 			console.log(status)
 			console.log(stats)
@@ -68,7 +68,7 @@ The promise may reject with a `TimeoutError` if the timeout specified in the `co
 ### Return value
 A promise that resolves to the response of the server.
 
-## RconClient#end(): Promise&lt;undefined&gt;
+## RconClient#disconnect(): Promise&lt;undefined&gt;
 Closes the RCON connection.
 
 ### Return value
