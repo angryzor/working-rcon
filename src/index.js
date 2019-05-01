@@ -167,4 +167,6 @@ exports.connect = (host, port, password, timeout = 1000) =>
 				reject(err)
 			}
 		})
+
+		socket.once('error', reject)
 	})
