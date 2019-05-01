@@ -31,6 +31,8 @@ export class TimeoutError extends RconError {
 	}
 }
 
+const newPacket = (size) => ({ size, buffer: Buffer.alloc(size), offset: 0 })
+
 class RconClient {
 	constructor(socket, timeout) {
 		this._callbacks = new Map()
@@ -38,7 +40,6 @@ class RconClient {
 		this._timeout = timeout
 		this._currentId = 0
 		this._pendingPacket = null
-		this._bytesReceived = 0
 		this._socket.on('data', this._onReceiveData)
 	}
 
@@ -127,21 +128,19 @@ class RconClient {
 		let currentOffset = 0
 
 		while (currentOffset < data.length) {
-			const packetSize = peekSize(data, currentOffset)
-			const packet = this._pendingPacket != null ? this._pendingPacket : Buffer.alloc(packetSize)
-			const startLocation = this._pendingPacket != null ? this._bytesReceived : 0
+			const packet = this._pendingPacket != null ? this._pendingPacket : newPacket(peekSize(data, currentOffset))
+			const copyUntil = Math.min(currentOffset + packet.size, data.length)
 
-			data.copy(packet, startLocation, currentOffset, currentOffset + packetSize)
+			data.copy(packet.buffer, packet.offset, currentOffset, copyUntil)
 
-			currentOffset += packetSize
-
-			if (currentOffset > data.length) {
-				this._pendingPacket = packet
-				this._bytesReceived = data.length - currentOffset
+			if (currentOffset + packet.size > data.length) {
+				this._pendingPacket = { ...packet, offset: packet.offset + copyUntil - currentOffset }
 			} else {
 				this._pendingPacket = null
-				this._onReceivePacket(packet)
+				this._onReceivePacket(packet.buffer)
 			}
+
+			currentOffset = copyUntil
 		}
 	}
 
