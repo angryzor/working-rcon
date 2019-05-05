@@ -129,11 +129,12 @@ class RconClient {
 
 		while (currentOffset < data.length) {
 			const packet = this._pendingPacket != null ? this._pendingPacket : newPacket(peekSize(data, currentOffset))
-			const copyUntil = Math.min(currentOffset + packet.size, data.length)
+			const packetEnd = currentOffset + packet.size - packet.offset
+			const copyUntil = Math.min(packetEnd, data.length)
 
 			data.copy(packet.buffer, packet.offset, currentOffset, copyUntil)
 
-			if (currentOffset + packet.size > data.length) {
+			if (packetEnd > data.length) {
 				this._pendingPacket = { ...packet, offset: packet.offset + copyUntil - currentOffset }
 			} else {
 				this._pendingPacket = null

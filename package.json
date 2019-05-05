@@ -4,7 +4,8 @@
   "description": "A working rcon library",
   "main": "dist/index",
   "scripts": {
-    "build": "babel --out-dir dist src/**/*.js"
+    "build": "babel --out-dir dist src/**/*.js",
+    "test": "jest"
   },
   "repository": {
     "type": "git",
