@@ -19,7 +19,7 @@ export const encode = ({ id, type, body }) => {
 }
 
 export const peekSize = (buf, offset) =>
-	buf.readInt32LE(offset) + 4
+	buf.length - offset < 4 ? null : buf.readInt32LE(offset) + 4
 
 export const decode = (buf) => {
 	const size = buf.readInt32LE(0)

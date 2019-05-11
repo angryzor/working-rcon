@@ -161,5 +161,42 @@ describe('RconClient', () => {
 			expect(decode).toHaveBeenNthCalledWith(3, Buffer.from(data3))
 			expect(decode).toHaveBeenCalledTimes(3)
 		})
+
+		test('should correctly packetize data that is split multiple times at the packet size value', () => {
+			const pkt = {}
+			const data1 = [
+				0x0a, 0x00, 0x00, 0x00,
+				0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0a,
+			]
+			const data2a = [
+				0x04, 0x00,
+			]
+			const data2b = [
+				0x00,
+			]
+			const data2c = [
+				0x00, 0x01, 0x02, 0x03, 0x04,
+			]
+			const data3 = [
+				0x06, 0x00, 0x00, 0x00,
+				0x01, 0x02, 0x03, 0x04, 0x05, 0x06,
+			]
+
+			const decode = jest.fn().mockReturnValue(pkt)
+			__index.__Rewire__('decode', decode)
+
+			const socket = new EventEmitter()
+			const RconClient = __index.__GetDependency__('RconClient')
+			const rconClient = new RconClient(socket, 5000)
+
+			socket.emit('data', Buffer.from([...data1, ...data2a]))
+			socket.emit('data', Buffer.from(data2b))
+			socket.emit('data', Buffer.from([...data2c, ...data3]))
+
+			expect(decode).toHaveBeenNthCalledWith(1, Buffer.from(data1))
+			expect(decode).toHaveBeenNthCalledWith(2, Buffer.from([...data2a, ...data2b, ...data2c]))
+			expect(decode).toHaveBeenNthCalledWith(3, Buffer.from(data3))
+			expect(decode).toHaveBeenCalledTimes(3)
+		})
 	})
 })
