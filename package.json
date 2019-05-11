@@ -1,6 +1,6 @@
 {
   "name": "working-rcon",
-  "version": "0.2.7",
+  "version": "0.2.8",
   "description": "A working rcon library",
   "main": "dist/index",
   "scripts": {
